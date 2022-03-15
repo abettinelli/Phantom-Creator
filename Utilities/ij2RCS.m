@@ -1,6 +1,6 @@
 function M = ij2RCS(DICOMinfo)
 
-dictionary = 'C:\Program Files\MATLAB\R2020a\toolbox\images\iptformats\dicom-dict.txt';
+dictionary = dicomdict("get");
 
 ImagePosition = DICOMinfo.(images.internal.dicom.lookupActions('0020','0032', dictionary));
 ImageOrientation = DICOMinfo.(images.internal.dicom.lookupActions('0020','0037', dictionary));
