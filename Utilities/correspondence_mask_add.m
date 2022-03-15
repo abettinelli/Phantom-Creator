@@ -28,6 +28,7 @@ CC.PixelIdxList = CC.PixelIdxList(1,idx);
 CC.MaskList = CC.MaskList(idx,1);
 CC.PrincipalAxisLength = CC.PrincipalAxisLength(idx,1);
 
+n_new = 0;
 for n = 1:CC.NumObjects
     % Convert Binary mask to Contour Set
     curr_imagemask = zeros(size(image_ROI.Mask));
@@ -37,11 +38,14 @@ for n = 1:CC.NumObjects
     % Add the new ROI sequence to the ROIs property of dicomContours object
     [~, idx] = ismember(round(reshape([MASKs{:, 5}],3,[])',10,'significant'), round(CC.PrincipalAxisLength{n},10,'significant'), 'rows');
     idx = find(idx);
-    try
-    MASKs{idx, 6} = MASKs{idx, 6}+1;
-    catch
-        keyboard
+    if ~isempty(idx)
+        MASKs{idx, 6} = MASKs{idx, 6}+1;
+        name = [MASKs{idx, 2} '_' num2str(MASKs{idx, 6},'%02.f')];
+        contourOut = addContour(contourOut,n,name,contourData,'Closed_planar',referencedUID,MASKs{idx, 3});
+    else
+        n_new = n_new+1;
+        name = ['CUSTOM_ROI_' num2str(n_new,'%02.f')];
+        contourOut = addContour(contourOut,n,name,contourData,'Closed_planar',referencedUID,[255 0 255]);
     end
-    name = [MASKs{idx, 2} '_' num2str(MASKs{idx, 6},'%02.f')];
-    contourOut = addContour(contourOut,n,name,contourData,'Closed_planar',referencedUID,MASKs{idx, 3});
+
 end
